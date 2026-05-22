@@ -82,8 +82,14 @@ function loadCustomImage(src) {
 	img.src = src;
 	customImages[src] = img;
 }
-loadCustomImage("___.png");
-loadCustomImage("ボス.png");
+
+function preloadBossImages() {
+	for (let i = 0; i < tekiMaster.length; i++) {
+		let imageSrc = tekiMaster[i].image;
+		if (imageSrc) loadCustomImage(imageSrc);
+	}
+}
+preloadBossImages();
 
 
 //ゲーム初期化
