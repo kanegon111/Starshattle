@@ -20,7 +20,7 @@ let tekiMaster = [
 	new TekiMaster(3, 10, 1, 50),                     //3,ボス子供
 	new TekiMaster(4, 12, 1, 150),                    //4,白ニワトリ(ザコ)
 	new TekiMaster(5, 12, 2, 200),                    //5,メカニワトリ(ザコ)
-	new TekiMaster(6, 60, 3000, 20000, "___.png", 130, 90),   //6,ボス（エイリアン船）
+	new TekiMaster(6, 60, 3000, 20000, "alien.png", 130, 90),   //6,ボス（エイリアン船）
 	new TekiMaster(7, 70, 4000, 30000, "ボス.png", 140, 140),//7,ボス（ドラゴン）
 ]
 //スプライトクラス
