@@ -82,7 +82,7 @@ function loadCustomImage(src) {
 	img.src = src;
 	customImages[src] = img;
 }
-loadCustomImage("___.png");
+loadCustomImage("alien.png");
 loadCustomImage("ボス.png");
 
 
