@@ -3,18 +3,25 @@
 //
 //敵マスター
 class TekiMaster {
-	constructor(tnum, r, hp, score) {
+	constructor(tnum, r, hp, score, image, imgW, imgH) {
 		this.tnum = tnum;
 		this.r = r;
 		this.hp = hp;
 		this.score = score;
+		this.image = image || null;
+		this.imgW = imgW || 0;
+		this.imgH = imgH || 0;
 	}
 }
 let tekiMaster = [
-	new TekiMaster(0, 10, 1, 100),  //0
-	new TekiMaster(1, 10, 1, 100),  //1
-	new TekiMaster(2, 70, 2000, 10000),  //2,ボス
-	new TekiMaster(3, 10, 1, 50),  //3,ボス子供
+	new TekiMaster(0, 10, 1, 100),                    //0,ピンク(ザコ)
+	new TekiMaster(1, 10, 1, 100),                    //1,黄色(ザコ)
+	new TekiMaster(2, 70, 2000, 10000),               //2,ボス(青グラサン)
+	new TekiMaster(3, 10, 1, 50),                     //3,ボス子供
+	new TekiMaster(4, 12, 1, 150),                    //4,白ニワトリ(ザコ)
+	new TekiMaster(5, 12, 2, 200),                    //5,メカニワトリ(ザコ)
+	new TekiMaster(6, 60, 3000, 20000, "___.png", 130, 90),   //6,ボス（エイリアン船）
+	new TekiMaster(7, 70, 4000, 30000, "ボス.png", 140, 140),//7,ボス（ドラゴン）
 ]
 //スプライトクラス
 class Sprite {
