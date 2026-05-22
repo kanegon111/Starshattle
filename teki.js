@@ -41,6 +41,10 @@ class Teki extends CharaBase {
 		this.mhp = tekiMaster[t].hp;
 		this.hp = this.mhp;
 		this.score = tekiMaster[t].score;
+		this.imageSrc = tekiMaster[t].image;
+		this.imgW = tekiMaster[t].imgW;
+		this.imgH = tekiMaster[t].imgH;
+		this.customImage = this.imageSrc ? customImages[this.imageSrc] : null;
 		this.flag = false;
 		this.dr = 90;
 		this.relo = 0;
@@ -55,7 +59,7 @@ class Teki extends CharaBase {
 
 		tekiFunc[this.tnum](this);
 
-		//当たり判定 
+		//当たり判定
 		if (!gameOver && !jiki.muteki && checkHit(this.x, this.y, this.r,
 			jiki.x, jiki.y, jiki.r)) {
 			if (this.mhp < 500) this.kill = true;
@@ -67,6 +71,20 @@ class Teki extends CharaBase {
 				jiki.damage = 10;
 				jiki.muteki = 60;
 			}
+		}
+	}
+
+	draw() {
+		if (this.customImage) {
+			let w = this.imgW;
+			let h = this.imgH;
+			let px = (this.x >> 8) - w / 2;
+			let py = (this.y >> 8) - h / 2;
+			if (px + w < camera_x || px >= camera_x + SCREEN_W
+				|| py + h < camera_y || py >= camera_y + SCREEN_H) return;
+			vcon.drawImage(this.customImage, px, py, w, h);
+		} else {
+			super.draw();
 		}
 	}
 }
@@ -197,6 +215,136 @@ function tekiMove04(obj) {
 	const ptn = [33, 34, 33, 35];
 	obj.sn = ptn[(obj.count >> 3) % 3];
 }
+//白ニワトリ(ザコ) - ジグザグ降下、たまに発射
+function tekiMove05(obj) {
+	//ジグザグに動く
+	obj.vx = Math.sin(obj.count * 0.05) * 200;
+	if (obj.vy < 200) obj.vy += 4;
+
+	//たまに弾を撃つ
+	if (obj.count > 60 && !obj.relo && obj.count % 80 == 0) {
+		if (rand(0, 3) == 1) {
+			tekiShot(obj, 350);
+			obj.relo = 100;
+		}
+	}
+
+	//スプライトの変更(にわとり)
+	const ptn = [57, 58, 57, 59];
+	obj.sn = ptn[(obj.count >> 3) % 4];
+}
+
+//メカニワトリ(ザコ) - 急降下後、自機を追跡
+function tekiMove06(obj) {
+	if (!obj.flag) {
+		//最初は普通に降下
+		if (obj.vy < 300) obj.vy += 10;
+		if ((obj.y >> 8) > 80) obj.flag = 1;
+	}
+	else if (obj.flag == 1) {
+		//自機の方向に向かう
+		if (jiki.x > obj.x && obj.vx < 250) obj.vx += 8;
+		else if (jiki.x < obj.x && obj.vx > -250) obj.vx -= 8;
+		if (obj.vy > 150) obj.vy -= 3;
+
+		//弾を撃つ
+		if (!obj.relo && obj.count % 50 == 0) {
+			tekiShot(obj, 400);
+			obj.relo = 80;
+		}
+	}
+
+	//スプライトの変更(ロボ)
+	const ptn = [51, 52, 51, 53];
+	obj.sn = ptn[(obj.count >> 3) % 4];
+}
+
+//ボス（エイリアン船 ___.png） - 左右移動しながら扇状に弾を撃つ
+function tekiMove07(obj) {
+	if (!obj.flag && (obj.y >> 8) >= 80) obj.flag = 1;
+	bossSound.play().catch(error => {
+		console.error("Failed to play boss sound:", error);
+	});
+	if (obj.flag == 1) {
+		if ((obj.vy -= 2) <= 0) {
+			obj.flag = 2;
+			obj.vy = 0;
+		}
+	}
+	else if (obj.flag == 2) {
+		if (obj.vx < 250) obj.vx += 8;
+		if ((obj.x >> 8) > (FIELD_W - 100)) obj.flag = 3;
+	}
+	else if (obj.flag == 3) {
+		if (obj.vx > -250) obj.vx -= 8;
+		if ((obj.x >> 8) < 100) obj.flag = 2;
+	}
+
+	//扇状の弾発射
+	if (obj.flag > 1 && obj.count % 30 == 0) {
+		for (let i = -2; i <= 2; i++) {
+			let an = (90 + i * 15) * Math.PI / 180;
+			let dx = Math.cos(an) * 280;
+			let dy = Math.sin(an) * 280;
+			teta.push(new Teta(15, obj.x, obj.y, dx, dy));
+		}
+	}
+
+	//HP半分以下で追加攻撃
+	if (obj.hp < obj.mhp / 2 && obj.count % 90 == 0) {
+		tekiShot(obj, 450);
+	}
+}
+
+//ボス（ドラゴン ボス.png） - 上下に揺れながら高速弾を撃つ
+function tekiMove08(obj) {
+	if (!obj.flag && (obj.y >> 8) >= 90) obj.flag = 1;
+	bossSound.play().catch(error => {
+		console.error("Failed to play boss sound:", error);
+	});
+	if (obj.flag == 1) {
+		if ((obj.vy -= 2) <= 0) {
+			obj.flag = 2;
+			obj.vy = 0;
+		}
+	}
+	else if (obj.flag >= 2) {
+		//左右に大きく移動
+		if (obj.flag == 2) {
+			if (obj.vx < 350) obj.vx += 6;
+			if ((obj.x >> 8) > (FIELD_W - 80)) obj.flag = 3;
+		}
+		else if (obj.flag == 3) {
+			if (obj.vx > -350) obj.vx -= 6;
+			if ((obj.x >> 8) < 80) obj.flag = 2;
+		}
+		//上下にゆらゆら
+		obj.vy = Math.sin(obj.count * 0.03) * 80;
+	}
+
+	//ぐるぐる回転する弾
+	if (obj.flag > 1) {
+		if (obj.count % 8 == 0) {
+			let an = obj.dr * Math.PI / 180;
+			let dx = Math.cos(an) * 250;
+			let dy = Math.sin(an) * 250;
+			teta.push(new Teta(15, obj.x, obj.y, dx, dy));
+			if ((obj.dr += 25) >= 360) obj.dr = 0;
+		}
+
+		//狙い撃ち
+		if (obj.count % 60 == 0) {
+			tekiShot(obj, 500);
+		}
+	}
+
+	//HP半分以下で子分召喚
+	if (obj.hp < obj.mhp / 2 && obj.count % 180 == 0) {
+		teki.push(new Teki(4, rand(50, FIELD_W - 50) << 8, 0, 0, 200));
+	}
+}
+
 let tekiFunc = [
 	tekiMove01, tekiMove02, tekiMove03, tekiMove04,
+	tekiMove05, tekiMove06, tekiMove07, tekiMove08,
 ];
