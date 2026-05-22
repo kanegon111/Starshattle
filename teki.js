@@ -75,7 +75,7 @@ class Teki extends CharaBase {
 	}
 
 	draw() {
-		if (this.customImage) {
+		if (this.customImage && this.customImage.complete && this.customImage.naturalWidth > 0) {
 			let w = this.imgW;
 			let h = this.imgH;
 			let px = (this.x >> 8) - w / 2;
@@ -149,11 +149,12 @@ function tekiMove02(obj) {
 
 //ボスパターン
 function tekiMove03(obj) {
-	if (!obj.flag && (obj.y >> 8) >= 70) obj.flag = 1;
-	// 効果音を再生
-	bossSound.play().catch(error => {
-		console.error("Failed to play boss sound:", error);
-	});
+	if (!obj.flag && (obj.y >> 8) >= 70) {
+		obj.flag = 1;
+		bossSound.play().catch(error => {
+			console.error("Failed to play boss sound:", error);
+		});
+	}
 	if (obj.flag == 1) {
 		if ((obj.vy -= 2) <= 0) {
 			obj.flag = 2;
