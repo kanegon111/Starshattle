@@ -75,10 +75,20 @@ let jiki = new Jiki();
 let spriteImage = new Image();
 spriteImage.src = "sprite.png";
 
+//ボス用の画像
+let customImages = {};
+function loadCustomImage(src) {
+	let img = new Image();
+	img.src = src;
+	customImages[src] = img;
+}
+loadCustomImage("___.png");
+loadCustomImage("ボス.png");
+
 
 //ゲーム初期化
 function gameInit() {
-	document.getElementById("startButton").style.display = "none"; // ボタンを隠す
+	document.getElementById("titleScreen").style.display = "none"; // タイトル画面を隠す
 	for (let i = 0; i < STAR_MAX; i++)star[i] = new Star();
 	setInterval(gameLoop, GAME_SPEED);
 	bgm.play().catch(error => {
@@ -197,43 +207,116 @@ let gameRound = 0;
 function gameLoop() {
 	gameCount++;
 
+	//WAVE 0: ピンクのザコ
 	if (gameWave == 0) {
 		if (rand(0, 50) == 1) {
 			teki.push(new Teki(0, rand(0, FIELD_W) << 8, 0, 0, rand(300, 1200)));
 		}
-		if (gameCount > 60 * 20) {
+		if (gameCount > 60 * 15) {
 			gameWave++;
 			gameCount = 0;
 		}
 	}
 
+	//WAVE 1: 黄色のザコ
 	else if (gameWave == 1) {
 		if (rand(0, 50) == 1) {
 			teki.push(new Teki(1, rand(0, FIELD_W) << 8, 0, 0, rand(300, 1200)));
 		}
-		if (gameCount > 60 * 20) {
+		if (gameCount > 60 * 15) {
 			gameWave++;
 			gameCount = 0;
 		}
 	}
 
+	//WAVE 2: 白ニワトリ登場
 	else if (gameWave == 2) {
+		if (rand(0, 45) == 1) {
+			teki.push(new Teki(4, rand(0, FIELD_W) << 8, 0, 0, rand(200, 800)));
+		}
+		if (gameCount > 60 * 15) {
+			gameWave++;
+			gameCount = 0;
+		}
+	}
+
+	//WAVE 3: メカニワトリ登場
+	else if (gameWave == 3) {
+		if (rand(0, 45) == 1) {
+			teki.push(new Teki(5, rand(0, FIELD_W) << 8, 0, 0, rand(300, 1000)));
+		}
+		if (gameCount > 60 * 15) {
+			gameWave++;
+			gameCount = 0;
+		}
+	}
+
+	//WAVE 4: 混成ザコ＋エイリアンボス出現
+	else if (gameWave == 4) {
+		if (rand(0, 50) == 1) {
+			let r = rand(0, 5);
+			let kinds = [0, 1, 4, 5, 0, 1];
+			teki.push(new Teki(kinds[r], rand(0, FIELD_W) << 8, 0, 0, rand(300, 1000)));
+		}
+		if (gameCount > 60 * 12) {
+			gameWave++;
+			gameCount = 0;
+			teki.push(new Teki(6, (FIELD_W / 2) << 8, -(70 << 8), 0, 200));
+		}
+	}
+
+	//WAVE 5: エイリアンボス戦
+	else if (gameWave == 5) {
+		if (teki.length == 0) {
+			gameWave++;
+			gameCount = 0;
+			bossHP = 0;
+		}
+	}
+
+	//WAVE 6: 混成ザコ＋元のボス
+	else if (gameWave == 6) {
 		if (rand(0, 50) == 1) {
 			let r = rand(0, 1);
 			teki.push(new Teki(r, rand(0, FIELD_W) << 8, 0, 0, rand(300, 1200)));
 		}
-		if (gameCount > 60 * 20) {
+		if (gameCount > 60 * 10) {
 			gameWave++;
 			gameCount = 0;
 			teki.push(new Teki(2, (FIELD_W / 2) << 8, -(70 << 8), 0, 200));
 		}
 	}
 
-	else if (gameWave == 3) {
+	//WAVE 7: 元のボス戦
+	else if (gameWave == 7) {
+		if (teki.length == 0) {
+			gameWave++;
+			gameCount = 0;
+			bossHP = 0;
+		}
+	}
+
+	//WAVE 8: 混成ザコ＋ドラゴンボス出現
+	else if (gameWave == 8) {
+		if (rand(0, 40) == 1) {
+			let r = rand(0, 5);
+			let kinds = [4, 5, 0, 1, 4, 5];
+			teki.push(new Teki(kinds[r], rand(0, FIELD_W) << 8, 0, 0, rand(300, 1000)));
+		}
+		if (gameCount > 60 * 12) {
+			gameWave++;
+			gameCount = 0;
+			teki.push(new Teki(7, (FIELD_W / 2) << 8, -(70 << 8), 0, 200));
+		}
+	}
+
+	//WAVE 9: ドラゴンボス戦
+	else if (gameWave == 9) {
 		if (teki.length == 0) {
 			gameWave = 0;
 			gameCount = 0;
 			gameRound++;
+			bossHP = 0;
 		}
 	}
 
