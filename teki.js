@@ -151,6 +151,7 @@ function tekiMove02(obj) {
 function tekiMove03(obj) {
 	if (!obj.flag && (obj.y >> 8) >= 70) {
 		obj.flag = 1;
+		bossSound.currentTime = 0;
 		bossSound.play().catch(error => {
 			console.error("Failed to play boss sound:", error);
 		});
@@ -171,14 +172,12 @@ function tekiMove03(obj) {
 	}
 
 	//弾発射
-	if (obj.flag > 1) {
+	if (obj.flag > 1 && obj.count % 10 == 0) {
 		let an, dx, dy;
 		an = obj.dr * Math.PI / 180;
 		dx = Math.cos(an) * 300;
 		dy = Math.sin(an) * 300;
-		let x2 = (Math.cos(an) * 70) << 8;
-		let y2 = (Math.sin(an) * 70) << 8;
-		teta.push(new Teta(15, obj.x + 2, obj.y + 2, dx, dy, 60));
+		teta.push(new Teta(15, obj.x + 2, obj.y + 2, dx, dy));
 
 		if ((obj.dr += 60) >= 360) obj.dr = 0;
 	}
@@ -190,8 +189,6 @@ function tekiMove03(obj) {
 			an = (90 + 45 - (c / 10) * 30) * Math.PI / 180;
 			dx = Math.cos(an) * 300;
 			dy = Math.sin(an) * 300;
-			let x2 = (Math.cos(an) * 70) << 8;
-			let y2 = (Math.sin(an) * 70) << 8;
 			teki.push(new Teki(3, obj.x + 2, obj.y + 2, dx, dy));
 		}
 	}
@@ -262,12 +259,13 @@ function tekiMove06(obj) {
 
 //ボス（エイリアン船 ___.png） - 左右移動しながら扇状に弾を撃つ
 function tekiMove07(obj) {
-		if (!obj.flag && (obj.y >> 8) >= 80) {
-					obj.flag = 1;
-					bossSound.play().catch(error => {
-									console.error("Failed to play boss sound:", error);
-					});
-		}
+	if (!obj.flag && (obj.y >> 8) >= 80) {
+		obj.flag = 1;
+		bossSound.currentTime = 0;
+		bossSound.play().catch(error => {
+			console.error("Failed to play boss sound:", error);
+		});
+	}
 	if (obj.flag == 1) {
 		if ((obj.vy -= 2) <= 0) {
 			obj.flag = 2;
@@ -297,16 +295,18 @@ function tekiMove07(obj) {
 	if (obj.hp < obj.mhp / 2 && obj.count % 90 == 0) {
 		tekiShot(obj, 450);
 	}
+	obj.sn = 75;
 }
 
 //ボス（ドラゴン ボス.png） - 上下に揺れながら高速弾を撃つ
 function tekiMove08(obj) {
-		if (!obj.flag && (obj.y >> 8) >= 90) {
-					obj.flag = 1;
-					bossSound.play().catch(error => {
-									console.error("Failed to play boss sound:", error);
-					});
-		}
+	if (!obj.flag && (obj.y >> 8) >= 90) {
+		obj.flag = 1;
+		bossSound.currentTime = 0;
+		bossSound.play().catch(error => {
+			console.error("Failed to play boss sound:", error);
+		});
+	}
 	if (obj.flag == 1) {
 		if ((obj.vy -= 2) <= 0) {
 			obj.flag = 2;
@@ -347,6 +347,7 @@ function tekiMove08(obj) {
 	if (obj.hp < obj.mhp / 2 && obj.count % 180 == 0) {
 		teki.push(new Teki(4, rand(50, FIELD_W - 50) << 8, 0, 0, 200));
 	}
+	obj.sn = 75;
 }
 
 let tekiFunc = [
