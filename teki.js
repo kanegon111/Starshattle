@@ -12,7 +12,7 @@ class Teta extends CharaBase {
 		// else this.timer = t;
 	}
 	update() {
-		// if (this.timer) {
+		// if (this.timer) {h
 		// 	this.timer--;
 		// 	return;
 		// }
@@ -261,10 +261,12 @@ function tekiMove06(obj) {
 
 //ボス（エイリアン船 ___.png） - 左右移動しながら扇状に弾を撃つ
 function tekiMove07(obj) {
-	if (!obj.flag && (obj.y >> 8) >= 80) obj.flag = 1;
-	bossSound.play().catch(error => {
-		console.error("Failed to play boss sound:", error);
-	});
+		if (!obj.flag && (obj.y >> 8) >= 80) {
+					obj.flag = 1;
+					bossSound.play().catch(error => {
+									console.error("Failed to play boss sound:", error);
+					});
+		}
 	if (obj.flag == 1) {
 		if ((obj.vy -= 2) <= 0) {
 			obj.flag = 2;
@@ -298,10 +300,12 @@ function tekiMove07(obj) {
 
 //ボス（ドラゴン ボス.png） - 上下に揺れながら高速弾を撃つ
 function tekiMove08(obj) {
-	if (!obj.flag && (obj.y >> 8) >= 90) obj.flag = 1;
-	bossSound.play().catch(error => {
-		console.error("Failed to play boss sound:", error);
-	});
+		if (!obj.flag && (obj.y >> 8) >= 90) {
+					obj.flag = 1;
+					bossSound.play().catch(error => {
+									console.error("Failed to play boss sound:", error);
+					});
+		}
 	if (obj.flag == 1) {
 		if ((obj.vy -= 2) <= 0) {
 			obj.flag = 2;
