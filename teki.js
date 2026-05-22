@@ -288,7 +288,6 @@ function tekiMove07(obj) {
 			let dy = Math.sin(an) * 280;
 			teta.push(new Teta(15, obj.x, obj.y, dx, dy));
 		}
-		obj.sn = 0;
 	}
 
 	//HP半分以下で追加攻撃
